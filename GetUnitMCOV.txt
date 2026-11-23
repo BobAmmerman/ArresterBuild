@@ -1,0 +1,138 @@
+Public Function GetUnitMCOV(WO As WorkOrder, UnitNumber As Integer, _
+                            ThisUnit As Unit) As String
+    '------------------------------------------------------------------------------------------------
+    'Created:   05/23/03    By:Ray Rafalowski
+    'Purpose:   To get the MCOV for the specific unit
+    'Inputs:    WO - variable containing type & catalog number
+    '               UnitNumber - the unit number (1-6) to get the MCOV for
+    '               ThisUnit - a unit variable holding info about the unit to get
+    '                               the unit MCOV for.
+    'Returns:   the MCOV for the unit or 0 if unit is not valid for arrester.
+    '   Rev'd:      10/22/03    By: Ray Raf
+    '   Note:       changed logic to handle new and old process for MCOV table name
+    '   Rev'd:      10/31/03    By: Ray Raf
+    '   Note:       added ThisUnit variable to pass required info for MCOV lookup
+    '                   when dealing with porcelain arresters.
+    '-------------------------------------------------------------------------------------------------
+    Dim strTemp As String
+    Dim varMCOVTable  As String, varCompTable As String
+    Dim SQL As String
+    Dim TempUnit As Unit
+    
+    Select Case WO.strType
+        Case 1 'porc
+            Select Case LCase(WO.strBuildPath)
+                Case "dual rated"
+                    'dual rated arresters ALWAYS have exactly two units.
+                    SQL = "SELECT * FROM MCOV_Dr_Porc "
+                    SQL = SQL & "WHERE CatalogNumber='" & WO.strCatNumber & "' "
+                    Set adoRS = dbconSetupData.Execute(SQL)
+                    If Not adoRS.EOF Then
+                        'the catalog number was found in the table
+                        Select Case UnitNumber
+                            Case 1
+                                GetUnitMCOV = adoRS.Fields("MCOV_Unit_1")
+                            Case 2
+                                GetUnitMCOV = adoRS.Fields("MCOV_Unit_2_Lower")
+                            Case Else
+                                GetUnitMCOV = "0"
+                        End Select
+                    Else
+                        'nothing found so the unit mcov has to be 0
+                        GetUnitMCOV = "0"
+                    End If
+                Case "cubicle mount"
+                    'cubicle mount can have up to 3 units
+                    With ThisUnit
+                        SQL = "SELECT * FROM MCOV_Cube "
+                        SQL = SQL & "WHERE Family='" & .Family4Lookup & "' "
+                        SQL = SQL & "AND ArresterRating='" & .Rating & "' "
+                        SQL = SQL & "AND String_MCOV ='" & .MCOV & "' "
+                        SQL = SQL & "AND PorcRingNumber='" & .PorcelainRingCode & "' ;"
+                        Set adoRS = dbconSetupData.Execute(SQL)
+                    End With
+                    
+                    If Not adoRS.EOF Then
+                        If UnitNumber > 0 And UnitNumber < 4 Then
+                            GetUnitMCOV = adoRS.Fields("MCOV_Unit_" & UnitNumber)
+                        Else
+                            GetUnitMCOV = "0"
+                        End If
+                    Else
+                        GetUnitMCOV = "0"
+                    End If
+                Case Else
+                    'all others can have up to 4 units
+                    With ThisUnit
+                        SQL = "SELECT * FROM MCOV_Porc "
+                        SQL = SQL & "WHERE Family='" & .Family4Lookup & "' "
+                        SQL = SQL & "AND ArresterRating='" & .Rating & "' "
+                        SQL = SQL & "AND string_MCOV='" & .MCOV & "' "
+                        SQL = SQL & "AND PorcRingNumber='" & .PorcelainRingCode & "' ;"
+                        Set adoRS = dbconSetupData.Execute(SQL)
+                    End With
+                    If Not adoRS.EOF Then
+                        If UnitNumber > 0 And UnitNumber < 4 Then
+                            GetUnitMCOV = adoRS.Fields("MCOV_Unit_" & UnitNumber)
+                        Else
+                            GetUnitMCOV = "0"
+                        End If
+                    Else
+                        GetUnitMCOV = "0"
+                    End If
+            End Select
+        Case 2 'poly
+            Select Case LCase(WO.strBuildPath)
+                Case "dual rated"
+                    SQL = "SELECT * FROM MCOV_Dr_Poly "
+                    SQL = SQL & "WHERE CatalogNumber = '" & WO.strCatNumber & "' ;"
+                    Set adoRS = dbconSetupData.Execute(SQL)
+                    If Not adoRS.EOF Then
+                        Select Case UnitNumber
+                            Case 1
+                                GetUnitMCOV = adoRS.Fields("MCOV_Unit_1")
+                            Case 2
+                                GetUnitMCOV = adoRS.Fields("MCOV_Unit_2_Lower")
+                            Case Else
+                                GetUnitMCOV = "0"
+                        End Select
+                    Else
+                        GetUnitMCOV = "0"
+                    End If
+                Case "1in", "12mm"
+                    'don't have process yet
+                    With TempUnit
+                        .UnitNumber = UnitNumber
+                        ParseCatNumToUnit WO.strCatNumber, TempUnit
+                        GetPolyTableNames TempUnit, varCompTable, varMCOVTable
+    '                    If WO.strBuildPath = "1in" Then
+    '                        varMCOVTable = "MCOV_1in"
+    '                    Else
+    '                        varMCOVTable = "MCOV_12mm"
+    '                    End If
+                        SQL = "SELECT * FROM " & varMCOVTable & " "
+                        SQL = SQL & "WHERE Family='" & .Family & "' "
+                        SQL = SQL & "AND String_MCOV='" & .MCOV & "' "
+                        SQL = SQL & "AND ShedCode='" & .PolyShedRingCode & "' "
+                        SQL = SQL & "AND ArresterRating = " & .Rating & " "
+                        Set adoRS = dbconSetupData.Execute(SQL)
+                    End With
+                    If Not adoRS.EOF Then
+                        'arrester was found.  Get Unit data
+                        If UnitNumber > 0 And UnitNumber < 7 Then
+                            GetUnitMCOV = adoRS.Fields("MCOV_Unit_" & UnitNumber)
+                        Else
+                            'arrester not found
+                            GetUnitMCOV = "0"
+                        End If
+                    Else
+                        'invalid unit number
+                        GetUnitMCOV = "0"
+                    End If
+            End Select
+    End Select
+    If adoRS.State = 1 Then
+        adoRS.Close
+    End If
+End Function
+

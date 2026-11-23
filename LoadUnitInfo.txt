@@ -1,0 +1,88 @@
+
+Public Function LoadUnitInfo(ByRef ThisWO As WorkOrder, ByRef ThisUnit As Unit) As Boolean
+    '------------------------------------------------------------------------------------------------
+    '   Created:    05/23/03    By:Ray Rafalowski
+    '   Purpose:   to load all of the info neccessary to print a unit report into
+    '                    WorkOrder and Unit type variables.  It assumes the unit SN
+    '                    and ID (1-6) are already loaded into ThisUnit
+    '   Inputs:       ThisWO - the work order variable to load info to
+    '                   ThisUnit - the unit variable to load data to.
+    '-------------------------------------------------------------------------------------------------
+    Dim bResult As Boolean
+    Dim strMSG As String
+    Dim SQL As String
+    Dim rstBuiltUnit As New ADODB.Recordset
+    
+    '1st check to make sure unit was built
+    bResult = CheckForBuiltUnit(ThisUnit.SN, CStr(ThisUnit.UnitNumber))
+    If bResult = False Then
+        strMSG = "No infomation exists in the database for the unit.  Data can't be loaded"
+        MsgBox strMSG
+        LoadUnitInfo = False
+        Exit Function
+    End If
+        
+    'get wo number first
+    ThisWO.strWO = GetWONumber(ThisUnit.SN)
+    If Len(ThisWO.strWO) = 0 Then
+        LoadUnitInfo = False
+        Exit Function
+    End If
+    
+    'use wo to get catalog number
+    ThisWO.strCatNumber = GetCatalogNumber(ThisWO.strWO)
+    If Len(ThisWO.strCatNumber) = 0 Then
+        LoadUnitInfo = False
+        Exit Function
+    End If
+    
+    'get rest of needed WO info
+    With ThisWO
+        .strType = getType(.strCatNumber)
+        .strBuildPath = getBuildPath(.strCatNumber, CStr(.strType))
+    End With
+    
+    'this gets the basic info for the arrester
+    ParseCatNumToUnit ThisWO.strCatNumber, ThisUnit
+    
+    With ThisUnit
+        '-----------now we need to get specific info for the unit.
+        'Get number of disks
+        SQL = "SELECT * FROM BuiltUnits "
+        SQL = SQL & "WHERE SerialNumber = '" & .SN & "' "
+        SQL = SQL & "AND Unit = " & .UnitNumber & " "
+
+        rstBuiltUnit.Open SQL, dbconResultsData, adOpenStatic, adLockReadOnly
+        If rstBuiltUnit.EOF = True Then
+            MsgBox "S/N " & .SN & ", Unit " & .UnitNumber & " has not yet been built!"
+            Exit Function
+        End If
+        globNumDisksToUse = rstBuiltUnit!NumDisks
+        .NumOfDisks = rstBuiltUnit!NumDisks
+        rstBuiltUnit.Close
+        
+        'get unit MCOV
+        .UnitMCOV = GetUnitMCOV(ThisWO, .UnitNumber, ThisUnit)
+        
+        If ThisWO.strType = 2 Then  'polymer arrester
+            'get stud, disk, and process for poly arrester  'modified 10/21/03
+            GetPolyStudDiskandProcess ThisWO.strCatNumber, .Rating, .Stud, .DiskType, .Process
+            If Len(Trim(.Stud)) < 1 Then
+                'stud not found
+                LoadUnitInfo = False
+                Exit Function
+            End If
+            
+            'get the sections (sheds) for the unit
+            GetUnitSheds ThisUnit, ThisWO.strBuildPath, ThisWO.strCatNumber
+        Else
+            'porcelain arrester
+            GetPorcDisk ThisUnit, ThisWO.strCatNumber, ThisWO.strBuildPath
+        End If
+        
+    End With
+    
+    'now we should have everything that we need.
+    LoadUnitInfo = True
+    
+End Function
