@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Arrester_Disk_Log.ArresterModule" Collapsed="true">
+    <Position X="1.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CiARgwAGgCAgIEAabDIAJApIACYggChIIAhqACChRTg=</HashCode>
+      <FileName>ArresterModule.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ArresterUnit" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Arrester_Disk_Log.ArresterUnit" Collapsed="true">
+    <Position X="1" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAACAAAAAABAAAACBQCABAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>ArresterUnit.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CatNum" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Arrester_Disk_Log.CatNum" Collapsed="true">
+    <Position X="0.75" Y="3.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="Arrester_Disk_Log.CatNum.Types" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>CatNum.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="Arrester_Disk_Log.CatNum.BuildPaths" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>CatNum.vb</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>CjyQLhAYFCqiBEAZDhyFIhIIaFEBACMCk5o2AIgBlCA=</HashCode>
+      <FileName>CatNum.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="WorkOrder1" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Arrester_Disk_Log.WorkOrder" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAICAEQAADCAAAAAAAABIAAAABYAAgCAAAgCAAEQQAg=</HashCode>
+      <FileName>WorkOrder.vb</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Arrester_Disk_Log.Nameplate" Collapsed="true">
+    <Position X="5.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAEAEAAABAAAAAAABAABQUACAEAAFgBACAAAAA=</HashCode>
+      <FileName>Nameplate.vb</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ArresterModule" />
+    </ShowAsAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

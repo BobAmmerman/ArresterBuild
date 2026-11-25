@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="GRoomConnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source=USSTCSOLEANSQL1\MSSQLP601;Initial Catalog=GRoom;User ID=essay;Password=$35S@y!10L3@n</Value>
+    </Setting>
+    <Setting Name="ngd_productionConnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source=USSTCSOLEANSQL1\MSSQLP601;Initial Catalog=ngd-production;User ID=essay;Password=$35S@y!10L3@n</Value>
+    </Setting>
+    <Setting Name="LastWorkOrder" Roaming="true" Type="System.String" Scope="User">
+      <Value Profile="(Default)">00000000</Value>
+    </Setting>
+    <Setting Name="EpoxySubGlass" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="AutoPrintReport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PolymerStationConnectionString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source=USSTCSOLEANSQL1\MSSQLP601;Initial Catalog=PolymerStation;User ID=essay;Password=$35S@y!10L3@n</Value>
+    </Setting>
+    <Setting Name="DBServer" Type="System.String" Scope="User">
+      <Value Profile="(Default)">USSTCSOLEANSQL1\MSSQLP601</Value>
+    </Setting>
+    <Setting Name="Username" Type="System.String" Scope="User">
+      <Value Profile="(Default)">essay</Value>
+    </Setting>
+    <Setting Name="Password" Type="System.String" Scope="User">
+      <Value Profile="(Default)">$35S@y!10L3@n</Value>
+    </Setting>
+    <Setting Name="LoginTimeoutMs" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">99999000</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
